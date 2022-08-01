@@ -5,13 +5,13 @@ import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,14 +26,10 @@ public class EmployeeController {
 	private EmployeeService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<EmployeeDTO>> findAllPaged(
-			@RequestParam(value = "page", defaultValue = "0") Integer page,
-			@RequestParam(value = "size", defaultValue = "10") Integer size,
-			@RequestParam(value = "sort", defaultValue = "name") String sort
-			) {
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort));
-		Page<EmployeeDTO> listDto = service.findAllPaged(pageRequest);
-		return ResponseEntity.ok().body(listDto);
+	public ResponseEntity<Page<EmployeeDTO>> findAllPaged(Pageable pageable) {
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("name"));
+		Page<EmployeeDTO> list = service.findAllPaged(pageRequest);
+		return ResponseEntity.ok().body(list);
 	}
 	
 	@PostMapping
